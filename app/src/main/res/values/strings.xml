@@ -1,0 +1,29 @@
+<resources>
+    <string name="app_name">AudioBB</string>
+
+    <string-array name="book_names">
+        <item>One Hundred Years of Solitude</item>
+        <item>Crime and Punishment</item>
+        <item>Nineteen Eighty-Four</item>
+        <item>Brave New World</item>
+        <item>Frankenstein</item>
+        <item>Hamlet</item>
+        <item>Things Fall Apart</item>
+        <item>Journey to the West</item>
+        <item>The Art of War</item>
+        <item>The Lord of the Rings</item>
+    </string-array>
+
+    <string-array name="book_authors">
+        <item>Gabriel García Márquez</item>
+        <item>Fyodor Dostoevsky</item>
+        <item>George Orwell</item>
+        <item>Aldous Huxley</item>
+        <item>Mary Shelley</item>
+        <item>William Shakespeare</item>
+        <item>Chinua Achebe</item>
+        <item>Wu Cheng'en</item>
+        <item>Sun Tzu</item>
+        <item>Leo Tolstoy</item>
+    </string-array>
+</resources>
