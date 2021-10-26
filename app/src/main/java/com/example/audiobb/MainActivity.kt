@@ -17,25 +17,39 @@ class MainActivity : AppCompatActivity(), BookListFragment.DoubleLayout {
         setTitle("AudioBB")
 
         bookViewModel = ViewModelProvider(this).get(BookViewModel::class.java)
-        bookViewModel.setSelectedBook(blankBook)
 
         doubleFragment = findViewById<FragmentContainerView>(R.id.fragmentContainerView2) != null
 
+        //First load
         if (savedInstanceState == null) {
+            bookViewModel.setSelectedBook(blankBook)
             supportFragmentManager.beginTransaction()
                 .add(R.id.fragmentContainerView1, BookListFragment.newInstance(initBooks()))
                 .addToBackStack(null)
                 .commit()
         }
 
+        //Double screen
         if (doubleFragment) {
+
+            if (supportFragmentManager.findFragmentById(R.id.fragmentContainerView1) is BookDetailsFragment) {
+                supportFragmentManager.popBackStack()
+            }
+
+            //If was single, and is now double
             if (supportFragmentManager.findFragmentById(R.id.fragmentContainerView2) == null) {
+
+                //Put RecyclerView back in fragmentContainerView1
                 supportFragmentManager.beginTransaction()
                     .add(R.id.fragmentContainerView2, BookDetailsFragment.newInstance())
                     .commit()
             }
         } else if (bookViewModel.getSelectedBook().value != blankBook) {
 
+            supportFragmentManager.beginTransaction()
+                .replace(R.id.fragmentContainerView1, BookDetailsFragment.newInstance())
+                .addToBackStack(null)
+                .commit()
         }
 
     }
@@ -58,14 +72,6 @@ class MainActivity : AppCompatActivity(), BookListFragment.DoubleLayout {
                 .replace(R.id.fragmentContainerView1, BookDetailsFragment.newInstance())
                 .addToBackStack(null)
                 .commit()
-        }
-    }
-
-    override fun onBackPressed() {
-        super.onBackPressed()
-
-        if (!doubleFragment) {
-            bookViewModel.setSelectedBook(blankBook)
         }
     }
 }
