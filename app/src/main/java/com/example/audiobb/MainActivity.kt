@@ -4,7 +4,10 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.lifecycle.ViewModelProvider
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), BookListFragment.DoubleLayout {
+
+    var doubleFragment = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -12,11 +15,9 @@ class MainActivity : AppCompatActivity() {
 
         ViewModelProvider(this).get(BookViewModel::class.java)
 
-        val listFragment = BookListFragment.newInstance(initBooks())
-        val detailsFragment = BookDetailsFragment.newInstance()
-
         supportFragmentManager.beginTransaction()
-            .add(R.id.fragmentContainerView, listFragment)
+            .add(R.id.fragmentContainerView, BookListFragment.newInstance(initBooks()))
+            .addToBackStack(null)
             .commit()
 
     }
@@ -31,5 +32,14 @@ class MainActivity : AppCompatActivity() {
         }
 
         return list
+    }
+
+    override fun selectionMade() {
+        if (!doubleFragment) {
+            supportFragmentManager.beginTransaction()
+                .replace(R.id.fragmentContainerView, BookDetailsFragment.newInstance())
+                .addToBackStack(null)
+                .commit()
+        }
     }
 }

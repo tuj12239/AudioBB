@@ -20,6 +20,10 @@ class BookListFragment(_bookList: BookList) : Fragment() {
         fun newInstance(bookList: BookList) = BookListFragment(bookList)
     }
 
+    interface DoubleLayout {
+        fun selectionMade()
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
     }
@@ -42,13 +46,13 @@ class BookListFragment(_bookList: BookList) : Fragment() {
             updateModel(bookListView.indexOfChild(it))
         }
         bookListView.adapter = adapter
-        updateModel(0)
     }
 
     private fun updateModel(index: Int) {
         ViewModelProvider(requireActivity())
             .get(BookViewModel::class.java)
             .setSelectedBook(bookList.get(index))
+        (requireActivity() as DoubleLayout).selectionMade()
     }
 
 }
