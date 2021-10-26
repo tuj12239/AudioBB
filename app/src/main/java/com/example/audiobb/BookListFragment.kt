@@ -5,6 +5,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
@@ -36,7 +37,18 @@ class BookListFragment(_bookList: BookList) : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         bookListView = layout.findViewById(R.id.bookListView)
-        bookListView.layoutManager = GridLayoutManager(requireContext(), 3)
+        bookListView.layoutManager = GridLayoutManager(requireContext(), 2)
+        val adapter = BookAdapter(requireContext(), bookList) {
+            updateModel(bookListView.indexOfChild(it))
+        }
+        bookListView.adapter = adapter
+        updateModel(0)
+    }
+
+    private fun updateModel(index: Int) {
+        ViewModelProvider(requireActivity())
+            .get(BookViewModel::class.java)
+            .setSelectedBook(bookList.get(index))
     }
 
 }
