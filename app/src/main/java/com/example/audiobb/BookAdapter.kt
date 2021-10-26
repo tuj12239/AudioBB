@@ -26,10 +26,8 @@ class BookAdapter(_context: Context, _books: BookList, _vocl: View.OnClickListen
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val titleLabel = holder.view.findViewById<TextView>(R.id.listTitleLabel)
         titleLabel.setText(books.get(position).name)
-
         val authorLabel = holder.view.findViewById<TextView>(R.id.listAuthorLabel)
         authorLabel.setText(books.get(position).author)
-
         holder.view.setOnClickListener(vocl)
     }
 

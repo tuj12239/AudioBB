@@ -43,7 +43,7 @@ class BookListFragment(_bookList: BookList) : Fragment() {
         bookListView = layout.findViewById(R.id.bookListView)
         bookListView.layoutManager = GridLayoutManager(requireContext(), 2)
         val adapter = BookAdapter(requireContext(), bookList) {
-            updateModel(bookListView.indexOfChild(it))
+            updateModel(bookListView.getChildAdapterPosition(it))
         }
         bookListView.adapter = adapter
     }

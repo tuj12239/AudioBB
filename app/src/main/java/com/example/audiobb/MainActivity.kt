@@ -2,6 +2,7 @@ package com.example.audiobb
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.fragment.app.FragmentContainerView
 import androidx.lifecycle.ViewModelProvider
 
 class MainActivity : AppCompatActivity(), BookListFragment.DoubleLayout {
@@ -15,10 +16,18 @@ class MainActivity : AppCompatActivity(), BookListFragment.DoubleLayout {
 
         ViewModelProvider(this).get(BookViewModel::class.java)
 
+        doubleFragment = findViewById<FragmentContainerView>(R.id.fragmentContainerView2) != null
+
         supportFragmentManager.beginTransaction()
-            .add(R.id.fragmentContainerView, BookListFragment.newInstance(initBooks()))
+            .add(R.id.fragmentContainerView1, BookListFragment.newInstance(initBooks()))
             .addToBackStack(null)
             .commit()
+
+        if (doubleFragment) {
+            supportFragmentManager.beginTransaction()
+                .add(R.id.fragmentContainerView2, BookDetailsFragment.newInstance())
+                .commit()
+        }
 
     }
 
@@ -37,7 +46,7 @@ class MainActivity : AppCompatActivity(), BookListFragment.DoubleLayout {
     override fun selectionMade() {
         if (!doubleFragment) {
             supportFragmentManager.beginTransaction()
-                .replace(R.id.fragmentContainerView, BookDetailsFragment.newInstance())
+                .replace(R.id.fragmentContainerView1, BookDetailsFragment.newInstance())
                 .addToBackStack(null)
                 .commit()
         }
