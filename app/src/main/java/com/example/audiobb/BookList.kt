@@ -1,6 +1,8 @@
 package com.example.audiobb
 
-class BookList {
+import java.io.Serializable
+
+class BookList : Serializable {
     private val list = ArrayList<Book>()
 
     fun add(book: Book) {

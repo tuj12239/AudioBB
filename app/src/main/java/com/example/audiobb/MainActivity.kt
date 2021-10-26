@@ -7,26 +7,35 @@ import androidx.lifecycle.ViewModelProvider
 
 class MainActivity : AppCompatActivity(), BookListFragment.DoubleLayout {
 
+    private val blankBook = Book("", "")
     var doubleFragment = false
+    lateinit var bookViewModel: BookViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setTitle("AudioBB")
 
-        ViewModelProvider(this).get(BookViewModel::class.java)
+        bookViewModel = ViewModelProvider(this).get(BookViewModel::class.java)
+        bookViewModel.setSelectedBook(blankBook)
 
         doubleFragment = findViewById<FragmentContainerView>(R.id.fragmentContainerView2) != null
 
-        supportFragmentManager.beginTransaction()
-            .add(R.id.fragmentContainerView1, BookListFragment.newInstance(initBooks()))
-            .addToBackStack(null)
-            .commit()
+        if (savedInstanceState == null) {
+            supportFragmentManager.beginTransaction()
+                .add(R.id.fragmentContainerView1, BookListFragment.newInstance(initBooks()))
+                .addToBackStack(null)
+                .commit()
+        }
 
         if (doubleFragment) {
-            supportFragmentManager.beginTransaction()
-                .add(R.id.fragmentContainerView2, BookDetailsFragment.newInstance())
-                .commit()
+            if (supportFragmentManager.findFragmentById(R.id.fragmentContainerView2) == null) {
+                supportFragmentManager.beginTransaction()
+                    .add(R.id.fragmentContainerView2, BookDetailsFragment.newInstance())
+                    .commit()
+            }
+        } else if (bookViewModel.getSelectedBook().value != blankBook) {
+
         }
 
     }
@@ -49,6 +58,14 @@ class MainActivity : AppCompatActivity(), BookListFragment.DoubleLayout {
                 .replace(R.id.fragmentContainerView1, BookDetailsFragment.newInstance())
                 .addToBackStack(null)
                 .commit()
+        }
+    }
+
+    override fun onBackPressed() {
+        super.onBackPressed()
+
+        if (!doubleFragment) {
+            bookViewModel.setSelectedBook(blankBook)
         }
     }
 }

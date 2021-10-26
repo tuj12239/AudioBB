@@ -9,15 +9,24 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
-class BookListFragment(_bookList: BookList) : Fragment() {
+class BookListFragment() : Fragment() {
 
-    private val bookList = _bookList
+    lateinit var bookList: BookList
     lateinit var layout: View
     lateinit var bookListView: RecyclerView
 
     companion object {
         @JvmStatic
-        fun newInstance(bookList: BookList) = BookListFragment(bookList)
+        fun newInstance(_bookList: BookList): BookListFragment {
+
+            val frag = BookListFragment().apply {
+                bookList = _bookList
+                arguments = Bundle().apply {
+                    putSerializable("bookList", bookList)
+                }
+            }
+            return frag
+        }
     }
 
     interface DoubleLayout {
@@ -26,6 +35,10 @@ class BookListFragment(_bookList: BookList) : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        arguments?.let {
+            bookList = it.getSerializable("bookList") as BookList
+        }
     }
 
     override fun onCreateView(
