@@ -23,10 +23,18 @@ class MainActivity : AppCompatActivity(), BookListFragment.DoubleLayout {
         //First load
         if (savedInstanceState == null) {
             bookViewModel.setSelectedBook(blankBook)
-            supportFragmentManager.beginTransaction()
-                .add(R.id.fragmentContainerView1, BookListFragment.newInstance(initBooks()))
-                .addToBackStack(null)
-                .commit()
+
+            if (doubleFragment) {
+                //Don't add to back stack
+                supportFragmentManager.beginTransaction()
+                    .add(R.id.fragmentContainerView1, BookListFragment.newInstance(initBooks()))
+                    .commit()
+            } else {
+                supportFragmentManager.beginTransaction()
+                    .add(R.id.fragmentContainerView1, BookListFragment.newInstance(initBooks()))
+                    .addToBackStack(null)
+                    .commit()
+            }
         }
 
         //Double screen
