@@ -53,7 +53,7 @@ class BookSearchActivity : AppCompatActivity() {
         Log.d("Response", json.toString())
 
         try {
-            for (i in 0 .. json.length()) {
+            for (i in 0 until json.length()) {
                 val jsonBook = json.getJSONObject(i)
                 bookList.add(Book(
                     jsonBook.getString("title"),
@@ -61,12 +61,14 @@ class BookSearchActivity : AppCompatActivity() {
                     jsonBook.getInt("id"),
                     jsonBook.getString("cover_url")
                 ))
-            }
-        } catch(j: JSONException) {j.printStackTrace()}
-    }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        data?.putExtra("booksjson", bookList)
+                Log.i("Added book:", bookList.get(i).name)
+            }
+
+            val resIntent = intent
+            resIntent.putExtra("bookjson", bookList)
+            setResult(RESULT_OK, resIntent)
+            finish()
+        } catch(j: JSONException) {j.printStackTrace()}
     }
 }
