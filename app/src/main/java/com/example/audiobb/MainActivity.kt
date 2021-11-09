@@ -32,10 +32,18 @@ class MainActivity : AppCompatActivity(), BookListFragment.DoubleLayout, BookLis
             if (it.resultCode == Activity.RESULT_OK) {
                 if (it.data != null) {
                     val jsonbooks = it.data?.getSerializableExtra("bookjson") as BookList
+                    bookList.clear()
                     for (i in 0 until jsonbooks.size()) {
                         Log.i("Received Book:", jsonbooks.get(i).name)
                         bookList.add(jsonbooks.get(i))
+                    }
+
+                    if (firstLoad) {
                         loadFragments()
+                        firstLoad = false
+                    } else {
+                        (supportFragmentManager.fragments[0] as BookListFragment)
+                            .updateList(bookList)
                     }
                 } else {
                     Log.e("Error", "IS NULL LMAOOO")
@@ -64,8 +72,6 @@ class MainActivity : AppCompatActivity(), BookListFragment.DoubleLayout, BookLis
     private fun loadFragments() {
         //First load
         if (firstLoad) {
-
-            firstLoad = false
 
             bookViewModel.setSelectedBook(blankBook)
 

@@ -77,4 +77,12 @@ class BookListFragment : Fragment() {
         (requireActivity() as DoubleLayout).selectionMade()
     }
 
+    fun updateList(bookList: BookList) {
+        this.bookList = bookList
+        val adapter = BookAdapter(requireContext(), bookList) {
+            updateModel(bookListView.getChildAdapterPosition(it))
+        }
+        bookListView.adapter = adapter
+    }
+
 }
