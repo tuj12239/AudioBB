@@ -2,6 +2,7 @@ package com.example.audiobb
 
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -56,9 +57,14 @@ class BookDetailsFragment : Fragment() {
             .get(BookViewModel::class.java)
             .getSelectedBook()
 
+
         name.text = book.value?.name
         author.text = book.value?.author
-        Picasso.get().load(book.value?.coverURL).into(cover)
+        if (book.value == null || book.value?.coverURL.isNullOrEmpty()) {
+            Log.d("Image", "waiting for image")
+        } else {
+            Picasso.get().load(book.value?.coverURL).into(cover)
+        }
     }
 
 }
