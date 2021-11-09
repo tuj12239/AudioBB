@@ -7,7 +7,7 @@ import androidx.lifecycle.ViewModelProvider
 
 class MainActivity : AppCompatActivity(), BookListFragment.DoubleLayout {
 
-    private val blankBook = Book("", "")
+    private val blankBook = Book("", "", -1, "")
     var doubleFragment = false
     lateinit var bookViewModel: BookViewModel
 
@@ -64,13 +64,14 @@ class MainActivity : AppCompatActivity(), BookListFragment.DoubleLayout {
 
     private fun initBooks(): BookList {
         val list = BookList()
+        /*
         val names = resources.getStringArray(R.array.book_names)
         val authors = resources.getStringArray(R.array.book_authors)
 
         for (i in names.indices) {
             list.add(Book(names[i], authors[i]))
         }
-
+        */
         return list
     }
 
