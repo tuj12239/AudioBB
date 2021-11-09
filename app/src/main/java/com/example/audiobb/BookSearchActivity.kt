@@ -1,5 +1,6 @@
 package com.example.audiobb
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -16,6 +17,9 @@ import org.json.JSONException
 import org.json.JSONObject
 
 class BookSearchActivity : AppCompatActivity() {
+
+    val bookList = BookList()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_book_search)
@@ -25,7 +29,7 @@ class BookSearchActivity : AppCompatActivity() {
         button.setOnClickListener{fetchBooks(searchField.text.toString())}
     }
 
-    val volleyQueue : RequestQueue by lazy {
+    private val volleyQueue : RequestQueue by lazy {
         Volley.newRequestQueue(this)
     }
 
@@ -34,27 +38,35 @@ class BookSearchActivity : AppCompatActivity() {
 
         Log.d("Event", "Fetching JSON from $url")
 
-        Thread{
-            kotlin.run {
-                volleyQueue.add(
-                JsonArrayRequest(
-                    Request.Method.GET,
-                    url,
-                    null,
-                    {onJSONReceived(it)},
-                    { Toast.makeText(this, "Couldn't get JSON", Toast.LENGTH_SHORT).show()}
-                )
-            ) }
-        }.start()
-
-
+        volleyQueue.add(
+            JsonArrayRequest(
+                Request.Method.GET,
+                url,
+                null,
+                {onJSONReceived(it)},
+                { Toast.makeText(this, "Couldn't get JSON", Toast.LENGTH_SHORT).show()}
+            )
+        )
     }
 
     private fun onJSONReceived(json: JSONArray) {
         Log.d("Response", json.toString())
 
         try {
-            //TODO Update views here
+            for (i in 0 .. json.length()) {
+                val jsonBook = json.getJSONObject(i)
+                bookList.add(Book(
+                    jsonBook.getString("title"),
+                    jsonBook.getString("author"),
+                    jsonBook.getInt("id"),
+                    jsonBook.getString("cover_url")
+                ))
+            }
         } catch(j: JSONException) {j.printStackTrace()}
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        data?.putExtra("booksjson", bookList)
     }
 }

@@ -1,8 +1,11 @@
 package com.example.audiobb
 
+import android.app.Activity
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
 import androidx.fragment.app.FragmentContainerView
 import androidx.lifecycle.ViewModelProvider
 
@@ -60,7 +63,14 @@ class MainActivity : AppCompatActivity(), BookListFragment.DoubleLayout {
                 .addToBackStack(null)
                 .commit()
         }
-        startActivity(Intent(this, BookSearchActivity::class.java))
+
+        val startForResult = registerForActivityResult(StartActivityForResult()) {
+            if (it.resultCode == Activity.RESULT_OK) {
+                val booklist = it.data?.getSerializableExtra("booksjson")
+            }
+        }
+
+        startForResult.launch(Intent(this, BookSearchActivity::class.java))
     }
 
     private fun initBooks(): BookList {
