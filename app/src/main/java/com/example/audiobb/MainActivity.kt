@@ -5,7 +5,7 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
 import androidx.fragment.app.FragmentContainerView
 import androidx.lifecycle.ViewModelProvider
@@ -17,6 +17,7 @@ class MainActivity : AppCompatActivity(), BookListFragment.DoubleLayout {
     lateinit var bookViewModel: BookViewModel
     val bookList = BookList()
     var firstLoad = false
+    lateinit var startForResult: ActivityResultLauncher<Intent>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,10 +30,10 @@ class MainActivity : AppCompatActivity(), BookListFragment.DoubleLayout {
 
         //First load
         if (savedInstanceState == null) {
-
             firstLoad = true
 
-            val startForResult = registerForActivityResult(StartActivityForResult()) {
+
+            startForResult = registerForActivityResult(StartActivityForResult()) {
                 if (it.resultCode == Activity.RESULT_OK) {
                     if (it.data != null) {
                         val jsonbooks = it.data?.getSerializableExtra("bookjson") as BookList
@@ -47,7 +48,7 @@ class MainActivity : AppCompatActivity(), BookListFragment.DoubleLayout {
                 }
             }
 
-            startForResult.launch(Intent(this, BookSearchActivity::class.java))
+            makeSearch()
         } else {
             loadFragments()
         }
@@ -66,16 +67,18 @@ class MainActivity : AppCompatActivity(), BookListFragment.DoubleLayout {
         //First load
         if (firstLoad) {
 
+            firstLoad = false
+
             bookViewModel.setSelectedBook(blankBook)
 
             if (doubleFragment) {
                 //Don't add to back stack
                 supportFragmentManager.beginTransaction()
-                    .add(R.id.fragmentContainerView1, BookListFragment.newInstance(bookList))
+                    .add(R.id.fragmentContainerView1, BookListFragment.newInstance(bookList) { makeSearch() })
                     .commit()
             } else {
                 supportFragmentManager.beginTransaction()
-                    .add(R.id.fragmentContainerView1, BookListFragment.newInstance(bookList))
+                    .add(R.id.fragmentContainerView1, BookListFragment.newInstance(bookList) { makeSearch() })
                     .addToBackStack(null)
                     .commit()
             }
@@ -103,5 +106,9 @@ class MainActivity : AppCompatActivity(), BookListFragment.DoubleLayout {
                 .addToBackStack(null)
                 .commit()
         }
+    }
+
+    private fun makeSearch() {
+        startForResult.launch(Intent(this, BookSearchActivity::class.java))
     }
 }

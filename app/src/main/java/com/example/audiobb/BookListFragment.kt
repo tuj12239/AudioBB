@@ -5,22 +5,25 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
-class BookListFragment() : Fragment() {
+class BookListFragment : Fragment() {
 
     lateinit var bookList: BookList
     lateinit var layout: View
     lateinit var bookListView: RecyclerView
+    lateinit var searchFun: ()->Unit
 
     companion object {
         @JvmStatic
-        fun newInstance(_bookList: BookList): BookListFragment {
+        fun newInstance(_bookList: BookList, function: () -> Unit): BookListFragment {
 
             val frag = BookListFragment().apply {
                 bookList = _bookList
+                searchFun = function
                 arguments = Bundle().apply {
                     putSerializable("bookList", bookList)
                 }
@@ -59,6 +62,9 @@ class BookListFragment() : Fragment() {
             updateModel(bookListView.getChildAdapterPosition(it))
         }
         bookListView.adapter = adapter
+
+        val searchButton = layout.findViewById<Button>(R.id.searchDialogButton)
+        searchButton.setOnClickListener { searchFun() }
     }
 
     private fun updateModel(index: Int) {
