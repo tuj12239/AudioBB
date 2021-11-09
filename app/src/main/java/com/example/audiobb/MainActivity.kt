@@ -1,5 +1,6 @@
 package com.example.audiobb
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.fragment.app.FragmentContainerView
@@ -59,7 +60,7 @@ class MainActivity : AppCompatActivity(), BookListFragment.DoubleLayout {
                 .addToBackStack(null)
                 .commit()
         }
-
+        startActivity(Intent(this, BookSearchActivity::class.java))
     }
 
     private fun initBooks(): BookList {
