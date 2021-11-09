@@ -16,6 +16,7 @@ class MainActivity : AppCompatActivity(), BookListFragment.DoubleLayout {
     var doubleFragment = false
     lateinit var bookViewModel: BookViewModel
     val bookList = BookList()
+    var firstLoad = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,6 +30,8 @@ class MainActivity : AppCompatActivity(), BookListFragment.DoubleLayout {
         //First load
         if (savedInstanceState == null) {
 
+            firstLoad = true
+
             val startForResult = registerForActivityResult(StartActivityForResult()) {
                 if (it.resultCode == Activity.RESULT_OK) {
                     if (it.data != null) {
@@ -36,6 +39,7 @@ class MainActivity : AppCompatActivity(), BookListFragment.DoubleLayout {
                         for (i in 0 until jsonbooks.size()) {
                             Log.i("Received Book:", jsonbooks.get(i).name)
                             bookList.add(jsonbooks.get(i))
+                            loadFragments()
                         }
                     } else {
                         Log.e("Error", "IS NULL LMAOOO")
@@ -44,6 +48,23 @@ class MainActivity : AppCompatActivity(), BookListFragment.DoubleLayout {
             }
 
             startForResult.launch(Intent(this, BookSearchActivity::class.java))
+        } else {
+            loadFragments()
+        }
+    }
+
+    override fun selectionMade() {
+        if (!doubleFragment) {
+            supportFragmentManager.beginTransaction()
+                .replace(R.id.fragmentContainerView1, BookDetailsFragment.newInstance())
+                .addToBackStack(null)
+                .commit()
+        }
+    }
+
+    private fun loadFragments() {
+        //First load
+        if (firstLoad) {
 
             bookViewModel.setSelectedBook(blankBook)
 
@@ -77,15 +98,6 @@ class MainActivity : AppCompatActivity(), BookListFragment.DoubleLayout {
             }
         } else if (bookViewModel.getSelectedBook().value != blankBook) {
 
-            supportFragmentManager.beginTransaction()
-                .replace(R.id.fragmentContainerView1, BookDetailsFragment.newInstance())
-                .addToBackStack(null)
-                .commit()
-        }
-    }
-
-    override fun selectionMade() {
-        if (!doubleFragment) {
             supportFragmentManager.beginTransaction()
                 .replace(R.id.fragmentContainerView1, BookDetailsFragment.newInstance())
                 .addToBackStack(null)
