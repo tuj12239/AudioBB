@@ -15,15 +15,14 @@ class BookListFragment : Fragment() {
     lateinit var bookList: BookList
     lateinit var layout: View
     lateinit var bookListView: RecyclerView
-    lateinit var searchFun: ()->Unit
 
     companion object {
         @JvmStatic
-        fun newInstance(_bookList: BookList, function: () -> Unit): BookListFragment {
+        fun newInstance(_bookList: BookList): BookListFragment {
 
             val frag = BookListFragment().apply {
                 bookList = _bookList
-                searchFun = function
+
                 arguments = Bundle().apply {
                     putSerializable("bookList", bookList)
                 }
@@ -34,6 +33,10 @@ class BookListFragment : Fragment() {
 
     interface DoubleLayout {
         fun selectionMade()
+    }
+
+    interface Search {
+        fun makeSearch()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -64,7 +67,7 @@ class BookListFragment : Fragment() {
         bookListView.adapter = adapter
 
         val searchButton = layout.findViewById<Button>(R.id.searchDialogButton)
-        searchButton.setOnClickListener { searchFun() }
+        searchButton.setOnClickListener { (requireActivity() as Search).makeSearch() }
     }
 
     private fun updateModel(index: Int) {
