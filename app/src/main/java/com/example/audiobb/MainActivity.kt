@@ -42,8 +42,13 @@ class MainActivity : AppCompatActivity(), BookListFragment.DoubleLayout, BookLis
                         loadFragments()
                         firstLoad = false
                     } else {
-                        (supportFragmentManager.fragments[0] as BookListFragment)
-                            .updateList(bookList)
+                        if (supportFragmentManager.fragments[0] !is BookListFragment) {
+                            (supportFragmentManager.fragments[1] as BookListFragment)
+                                .updateList(bookList)
+                        } else {
+                            (supportFragmentManager.fragments[0] as BookListFragment)
+                                .updateList(bookList)
+                        }
                     }
                 } else {
                     Log.e("Error", "IS NULL LMAOOO")

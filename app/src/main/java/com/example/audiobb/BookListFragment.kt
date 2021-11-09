@@ -83,6 +83,10 @@ class BookListFragment : Fragment() {
             updateModel(bookListView.getChildAdapterPosition(it))
         }
         bookListView.adapter = adapter
+
+        arguments = Bundle().apply {
+            putSerializable("bookList", bookList)
+        }
     }
 
 }
