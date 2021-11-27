@@ -6,6 +6,7 @@ import android.content.Intent
 import android.content.ServiceConnection
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
 import android.util.Log
@@ -29,12 +30,19 @@ class MainActivity : AppCompatActivity(), BookListFragment.DoubleLayout, BookLis
     //Service
     lateinit var playerBinder: PlayerService.MediaControlBinder
 
+    val timerHandler = Handler(Looper.getMainLooper()) {
+        bookViewModel.setBookProgress((it.obj as PlayerService.BookProgress).progress)
+        Log.i("Got message: ", "${(it.obj as PlayerService.BookProgress).progress}")
+        true
+    }
+
     var isConnected = false
 
     val serviceConnection = object: ServiceConnection {
         override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
             isConnected = true
             playerBinder = service as PlayerService.MediaControlBinder
+            playerBinder.setProgressHandler(timerHandler)
         }
 
         override fun onServiceDisconnected(name: ComponentName?) {

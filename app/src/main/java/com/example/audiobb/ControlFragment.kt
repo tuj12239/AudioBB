@@ -55,11 +55,17 @@ class ControlFragment : Fragment() {
             .getSelectedBook()
             .observe(viewLifecycleOwner, {updateLabels()})
 
+        ViewModelProvider(requireActivity())
+            .get(BookViewModel::class.java)
+            .getBookProgress()
+            .observe(viewLifecycleOwner, {updateSeekBar()})
+
         playButton.setOnClickListener {
 
             if (stopped) {
                 (requireActivity() as Controller).play()
-                playButton.setText("Pause")
+
+                playButton.text = "Pause"
                 stopped = false
                 playing = true
             } else {
@@ -93,6 +99,14 @@ class ControlFragment : Fragment() {
 
         label.text = "Now Playing: " + book.value?.name
         seekBar.max = book.value?.duration!!
+    }
+
+    private fun updateSeekBar() {
+        val progress = ViewModelProvider(requireActivity())
+            .get(BookViewModel::class.java)
+            .getBookProgress()
+
+        seekBar.progress = progress.value!!
     }
 
 }
