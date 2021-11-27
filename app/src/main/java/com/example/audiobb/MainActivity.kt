@@ -12,7 +12,7 @@ import androidx.lifecycle.ViewModelProvider
 
 class MainActivity : AppCompatActivity(), BookListFragment.DoubleLayout, BookListFragment.Search {
 
-    private val blankBook = Book("", "", -1, "")
+    private val blankBook = Book("", "", -1, "", 0)
     var doubleFragment = false
     lateinit var bookViewModel: BookViewModel
     val bookList = BookList()

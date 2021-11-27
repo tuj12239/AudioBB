@@ -59,7 +59,8 @@ class BookSearchActivity : AppCompatActivity() {
                     jsonBook.getString("title"),
                     jsonBook.getString("author"),
                     jsonBook.getInt("id"),
-                    jsonBook.getString("cover_url")
+                    jsonBook.getString("cover_url"),
+                    jsonBook.getInt("duration")
                 ))
 
                 Log.i("Added book:", bookList.get(i).name)
