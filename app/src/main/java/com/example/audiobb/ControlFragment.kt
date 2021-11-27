@@ -1,6 +1,7 @@
 package com.example.audiobb
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -23,7 +24,13 @@ class ControlFragment : Fragment() {
 
     companion object {
         @JvmStatic
-        fun newInstance() = ControlFragment()
+        fun newInstance(): ControlFragment {
+
+            val frag = ControlFragment().apply {
+                arguments = Bundle()
+            }
+            return frag
+        }
     }
 
     interface Controller {
@@ -55,16 +62,14 @@ class ControlFragment : Fragment() {
             playing = it.getBoolean("playing")
             stopped = it.getBoolean("stopped")
 
+            Log.i("Playing: ", "$playing")
+            Log.i("Stopped: ", "$stopped")
+
             if (playing) {
                 playButton.text = "Pause"
             } else {
                 playButton.text = "Play"
             }
-        }
-
-        arguments?.apply {
-            putBoolean("playing", playing)
-            putBoolean("stopped", stopped)
         }
 
         ViewModelProvider(requireActivity())

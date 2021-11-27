@@ -115,6 +115,10 @@ class MainActivity : AppCompatActivity(), BookListFragment.DoubleLayout, BookLis
         //First load
         if (firstLoad) {
 
+            supportFragmentManager.beginTransaction()
+                .add(R.id.fragmentContainerView3, ControlFragment.newInstance())
+                .commit();
+
             bookViewModel.setSelectedBook(blankBook)
 
             if (doubleFragment) {
@@ -152,10 +156,6 @@ class MainActivity : AppCompatActivity(), BookListFragment.DoubleLayout, BookLis
                 .addToBackStack(null)
                 .commit()
         }
-
-        supportFragmentManager.beginTransaction()
-            .add(R.id.fragmentContainerView3, ControlFragment.newInstance())
-            .commit();
     }
 
     override fun makeSearch() {
