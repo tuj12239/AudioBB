@@ -143,14 +143,11 @@ class ControlFragment : Fragment() {
             .get(BookViewModel::class.java)
             .getSelectedBook()
 
+        label.text = "Now Playing: " + book.value?.name
         seekBar.max = book.value?.duration!!
 
         if (book.value?.id != bookID) {
             bookID = book.value?.id!!
-
-            label.text = "Now Playing: " + book.value?.name
-
-
 
             (requireActivity() as Controller).stop()
             (requireActivity() as Controller).seek(0)
