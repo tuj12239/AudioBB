@@ -15,6 +15,7 @@ import androidx.activity.result.contract.ActivityResultContracts.StartActivityFo
 import androidx.fragment.app.FragmentContainerView
 import androidx.lifecycle.ViewModelProvider
 import edu.temple.audlibplayer.PlayerService
+import java.lang.NullPointerException
 
 class MainActivity : AppCompatActivity(), BookListFragment.DoubleLayout, BookListFragment.Search,
                                             ControlFragment.Controller{
@@ -31,8 +32,10 @@ class MainActivity : AppCompatActivity(), BookListFragment.DoubleLayout, BookLis
     lateinit var playerBinder: PlayerService.MediaControlBinder
 
     val timerHandler = Handler(Looper.getMainLooper()) {
-        bookViewModel.setBookProgress((it.obj as PlayerService.BookProgress).progress)
-        Log.i("Got message: ", "${(it.obj as PlayerService.BookProgress).progress}")
+        try {
+            bookViewModel.setBookProgress((it.obj as PlayerService.BookProgress).progress)
+            Log.i("Got message: ", "${(it.obj as PlayerService.BookProgress).progress}")
+        } catch (npe: NullPointerException) {Log.i("Got message: ", "not playing")}
         true
     }
 

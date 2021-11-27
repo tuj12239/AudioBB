@@ -88,6 +88,20 @@ class ControlFragment : Fragment() {
             playing = false
             playButton.text = "Play"
         }
+
+        seekBar.setOnSeekBarChangeListener(object: SeekBar.OnSeekBarChangeListener {
+            override fun onProgressChanged(bar: SeekBar?, progress: Int, user: Boolean) {
+                if (user) {
+                    (requireActivity() as Controller).seek(progress)
+                }
+            }
+
+            override fun onStartTrackingTouch(p0: SeekBar?) {
+            }
+
+            override fun onStopTrackingTouch(p0: SeekBar?) {
+            }
+        })
     }
 
 
