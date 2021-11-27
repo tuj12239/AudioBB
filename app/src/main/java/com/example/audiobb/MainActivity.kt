@@ -1,23 +1,46 @@
 package com.example.audiobb
 
 import android.app.Activity
+import android.content.ComponentName
 import android.content.Intent
+import android.content.ServiceConnection
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.IBinder
+import android.os.Looper
 import android.util.Log
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
 import androidx.fragment.app.FragmentContainerView
 import androidx.lifecycle.ViewModelProvider
+import edu.temple.audlibplayer.PlayerService
 
-class MainActivity : AppCompatActivity(), BookListFragment.DoubleLayout, BookListFragment.Search {
+class MainActivity : AppCompatActivity(), BookListFragment.DoubleLayout, BookListFragment.Search,
+                                            ControlFragment.Controller{
 
+    //Books
     private val blankBook = Book("", "", -1, "", 0)
     var doubleFragment = false
     lateinit var bookViewModel: BookViewModel
     val bookList = BookList()
     var firstLoad = false
     lateinit var startForResult: ActivityResultLauncher<Intent>
+
+    //Service
+    lateinit var playerBinder: PlayerService.MediaControlBinder
+
+    var isConnected = false
+
+    val serviceConnection = object: ServiceConnection {
+        override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
+            isConnected = true
+            playerBinder = service as PlayerService.MediaControlBinder
+        }
+
+        override fun onServiceDisconnected(name: ComponentName?) {
+            isConnected = false
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -58,6 +81,11 @@ class MainActivity : AppCompatActivity(), BookListFragment.DoubleLayout, BookLis
 
         //First load
         if (savedInstanceState == null) {
+
+            bindService(Intent(this, PlayerService::class.java),
+                serviceConnection,
+                BIND_AUTO_CREATE)
+
             firstLoad = true
             makeSearch()
         } else {
@@ -123,5 +151,17 @@ class MainActivity : AppCompatActivity(), BookListFragment.DoubleLayout, BookLis
 
     override fun makeSearch() {
         startForResult.launch(Intent(this, BookSearchActivity::class.java))
+    }
+
+    override fun play() {
+        bookViewModel.getSelectedBook().value?.let { playerBinder.play(it.id) }
+    }
+
+    override fun pause() {
+        playerBinder.pause()
+    }
+
+    override fun stop() {
+        playerBinder.stop()
     }
 }

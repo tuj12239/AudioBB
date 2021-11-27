@@ -5,6 +5,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.fragment.app.Fragment
@@ -15,10 +16,19 @@ class ControlFragment : Fragment() {
 
     lateinit var layout: View
     lateinit var label: TextView
+    lateinit var playButton: Button
+    lateinit var pauseButton: Button
+    lateinit var stopButton: Button
 
     companion object {
         @JvmStatic
         fun newInstance() = ControlFragment()
+    }
+
+    interface Controller {
+        fun play()
+        fun pause()
+        fun stop()
     }
 
     override fun onCreateView(
@@ -34,11 +44,18 @@ class ControlFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         label = layout.findViewById(R.id.nowPlayingLabel)
+        playButton = layout.findViewById(R.id.playButton)
+        pauseButton = layout.findViewById(R.id.pauseButton)
+        stopButton = layout.findViewById(R.id.stopButton)
 
         ViewModelProvider(requireActivity())
             .get(BookViewModel::class.java)
             .getSelectedBook()
             .observe(viewLifecycleOwner, {updateLabels()})
+
+        playButton.setOnClickListener { (requireActivity() as Controller).play() }
+        pauseButton.setOnClickListener { (requireActivity() as Controller).pause() }
+        stopButton.setOnClickListener { (requireActivity() as Controller).stop() }
     }
 
 
