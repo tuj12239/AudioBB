@@ -18,6 +18,7 @@ class ControlFragment : Fragment() {
     lateinit var playButton: Button
     lateinit var stopButton: Button
     lateinit var seekBar: SeekBar
+    var bookID = -1
 
     var playing = false
     var stopped = true
@@ -61,6 +62,7 @@ class ControlFragment : Fragment() {
 
             playing = it.getBoolean("playing")
             stopped = it.getBoolean("stopped")
+            bookID = it.getInt("bookID")
 
             Log.i("Playing: ", "$playing")
             Log.i("Stopped: ", "$stopped")
@@ -141,9 +143,30 @@ class ControlFragment : Fragment() {
             .get(BookViewModel::class.java)
             .getSelectedBook()
 
+        if (book.value?.id != bookID) {
+            bookID = book.value?.id!!
 
-        label.text = "Now Playing: " + book.value?.name
-        seekBar.max = book.value?.duration!!
+            label.text = "Now Playing: " + book.value?.name
+            seekBar.max = book.value?.duration!!
+
+
+
+            (requireActivity() as Controller).stop()
+            (requireActivity() as Controller).seek(0)
+            playing = false
+            playButton.text = "Play"
+            stopped = true
+
+            ViewModelProvider(requireActivity())
+                .get(BookViewModel::class.java)
+                .setBookProgress(0)
+
+            arguments?.apply {
+                putBoolean("playing", playing)
+                putBoolean("stopped", stopped)
+                putInt("bookID", bookID)
+            }
+        }
     }
 
     private fun updateSeekBar() {

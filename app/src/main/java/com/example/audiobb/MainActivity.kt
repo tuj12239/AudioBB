@@ -98,6 +98,8 @@ class MainActivity : AppCompatActivity(), BookListFragment.DoubleLayout, BookLis
             firstLoad = true
             makeSearch()
         } else {
+
+            playerBinder = savedInstanceState.getBinder("playerBinder") as PlayerService.MediaControlBinder
             loadFragments()
         }
     }
@@ -181,10 +183,5 @@ class MainActivity : AppCompatActivity(), BookListFragment.DoubleLayout, BookLis
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         outState.putBinder("playerBinder", playerBinder)
-    }
-
-    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
-        super.onRestoreInstanceState(savedInstanceState)
-        playerBinder = savedInstanceState.getBinder("playerBinder") as PlayerService.MediaControlBinder
     }
 }
