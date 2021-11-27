@@ -84,7 +84,7 @@ class BookListFragment : Fragment() {
         }
         bookListView.adapter = adapter
 
-        arguments = Bundle().apply {
+        arguments?.apply {
             putSerializable("bookList", bookList)
         }
     }

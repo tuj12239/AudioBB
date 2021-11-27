@@ -50,6 +50,23 @@ class ControlFragment : Fragment() {
         stopButton = layout.findViewById(R.id.stopButton)
         seekBar = layout.findViewById(R.id.seekBar)
 
+        arguments?.let {
+
+            playing = it.getBoolean("playing")
+            stopped = it.getBoolean("stopped")
+
+            if (playing) {
+                playButton.text = "Pause"
+            } else {
+                playButton.text = "Play"
+            }
+        }
+
+        arguments?.apply {
+            putBoolean("playing", playing)
+            putBoolean("stopped", stopped)
+        }
+
         ViewModelProvider(requireActivity())
             .get(BookViewModel::class.java)
             .getSelectedBook()
@@ -80,6 +97,10 @@ class ControlFragment : Fragment() {
                 }
             }
 
+            arguments?.apply {
+                putBoolean("playing", playing)
+                putBoolean("stopped", stopped)
+            }
         }
 
         stopButton.setOnClickListener {
@@ -87,6 +108,11 @@ class ControlFragment : Fragment() {
             stopped = true
             playing = false
             playButton.text = "Play"
+
+            arguments?.apply {
+                putBoolean("playing", playing)
+                putBoolean("stopped", stopped)
+            }
         }
 
         seekBar.setOnSeekBarChangeListener(object: SeekBar.OnSeekBarChangeListener {

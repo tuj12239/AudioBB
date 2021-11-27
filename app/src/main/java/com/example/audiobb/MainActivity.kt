@@ -4,11 +4,8 @@ import android.app.Activity
 import android.content.ComponentName
 import android.content.Intent
 import android.content.ServiceConnection
+import android.os.*
 import androidx.appcompat.app.AppCompatActivity
-import android.os.Bundle
-import android.os.Handler
-import android.os.IBinder
-import android.os.Looper
 import android.util.Log
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
@@ -44,6 +41,7 @@ class MainActivity : AppCompatActivity(), BookListFragment.DoubleLayout, BookLis
     val serviceConnection = object: ServiceConnection {
         override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
             isConnected = true
+
             playerBinder = service as PlayerService.MediaControlBinder
             playerBinder.setProgressHandler(timerHandler)
         }
@@ -178,5 +176,15 @@ class MainActivity : AppCompatActivity(), BookListFragment.DoubleLayout, BookLis
 
     override fun seek(progress: Int) {
         playerBinder.seekTo(progress)
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putBinder("playerBinder", playerBinder)
+    }
+
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        super.onRestoreInstanceState(savedInstanceState)
+        playerBinder = savedInstanceState.getBinder("playerBinder") as PlayerService.MediaControlBinder
     }
 }
