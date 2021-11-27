@@ -10,6 +10,10 @@ class BookViewModel : ViewModel() {
         MutableLiveData<Book>()
     }
 
+    private val bookProgress: MutableLiveData<Double> by lazy {
+        MutableLiveData<Double>()
+    }
+
     fun getSelectedBook(): LiveData<Book> {
         return selectedBook
     }

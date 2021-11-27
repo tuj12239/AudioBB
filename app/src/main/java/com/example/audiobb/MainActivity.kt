@@ -164,4 +164,8 @@ class MainActivity : AppCompatActivity(), BookListFragment.DoubleLayout, BookLis
     override fun stop() {
         playerBinder.stop()
     }
+
+    override fun seek(progress: Int) {
+        playerBinder.seekTo(progress)
+    }
 }

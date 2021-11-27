@@ -1,24 +1,25 @@
 package com.example.audiobb
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
-import android.widget.ImageView
+import android.widget.SeekBar
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import com.squareup.picasso.Picasso
 
 class ControlFragment : Fragment() {
 
     lateinit var layout: View
     lateinit var label: TextView
     lateinit var playButton: Button
-    lateinit var pauseButton: Button
     lateinit var stopButton: Button
+    lateinit var seekBar: SeekBar
+
+    var playing = false
+    var stopped = true
 
     companion object {
         @JvmStatic
@@ -29,6 +30,7 @@ class ControlFragment : Fragment() {
         fun play()
         fun pause()
         fun stop()
+        fun seek(progress: Int)
     }
 
     override fun onCreateView(
@@ -45,17 +47,41 @@ class ControlFragment : Fragment() {
 
         label = layout.findViewById(R.id.nowPlayingLabel)
         playButton = layout.findViewById(R.id.playButton)
-        pauseButton = layout.findViewById(R.id.pauseButton)
         stopButton = layout.findViewById(R.id.stopButton)
+        seekBar = layout.findViewById(R.id.seekBar)
 
         ViewModelProvider(requireActivity())
             .get(BookViewModel::class.java)
             .getSelectedBook()
             .observe(viewLifecycleOwner, {updateLabels()})
 
-        playButton.setOnClickListener { (requireActivity() as Controller).play() }
-        pauseButton.setOnClickListener { (requireActivity() as Controller).pause() }
-        stopButton.setOnClickListener { (requireActivity() as Controller).stop() }
+        playButton.setOnClickListener {
+
+            if (stopped) {
+                (requireActivity() as Controller).play()
+                playButton.setText("Pause")
+                stopped = false
+                playing = true
+            } else {
+                (requireActivity() as Controller).pause()
+
+                if (playing) {
+                    playing = false
+                    playButton.text = "Play"
+                } else {
+                    playing = true
+                    playButton.text = "Pause"
+                }
+            }
+
+        }
+
+        stopButton.setOnClickListener {
+            (requireActivity() as Controller).stop()
+            stopped = true
+            playing = false
+            playButton.text = "Play"
+        }
     }
 
 
@@ -66,6 +92,7 @@ class ControlFragment : Fragment() {
 
 
         label.text = "Now Playing: " + book.value?.name
+        seekBar.max = book.value?.duration!!
     }
 
 }
