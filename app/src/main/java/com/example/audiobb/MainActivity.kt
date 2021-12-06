@@ -15,6 +15,8 @@ import androidx.lifecycle.ViewModelProvider
 import edu.temple.audlibplayer.PlayerService
 import java.io.BufferedInputStream
 import java.io.File
+import java.io.ObjectInputStream
+import java.io.ObjectOutputStream
 import java.lang.NullPointerException
 import java.net.URL
 import kotlin.concurrent.thread
@@ -83,6 +85,13 @@ class MainActivity : AppCompatActivity(), BookListFragment.DoubleLayout, BookLis
                         bookList.add(jsonbooks.get(i))
                     }
 
+                    //Read booklist to file
+                    val fo = openFileOutput("BookList.txt", MODE_PRIVATE)
+                    val oo = ObjectOutputStream(fo)
+                    oo.writeObject(bookList)
+                    fo.close()
+                    oo.close()
+
                     if (firstLoad) {
                         loadFragments()
                         firstLoad = false
@@ -95,6 +104,7 @@ class MainActivity : AppCompatActivity(), BookListFragment.DoubleLayout, BookLis
                                 .updateList(bookList)
                         }
                     }
+
                 } else {
                     Log.e("Error", "IS NULL LMAOOO")
                 }
@@ -109,7 +119,18 @@ class MainActivity : AppCompatActivity(), BookListFragment.DoubleLayout, BookLis
                 BIND_AUTO_CREATE)
 
             firstLoad = true
-            makeSearch()
+            if (!getFilesDir().list().contains("BookList.txt")) {
+                makeSearch()
+            } else {
+                val fi = openFileInput("BookList.txt")
+                val oi = ObjectInputStream(fi)
+                val list = oi.readObject() as BookList
+
+                for (i in 0..list.size()-1) {
+                    bookList.add(list.get(i))
+                }
+                loadFragments()
+            }
         } else {
 
             playerBinder = savedInstanceState.getBinder("playerBinder") as PlayerService.MediaControlBinder
@@ -179,6 +200,10 @@ class MainActivity : AppCompatActivity(), BookListFragment.DoubleLayout, BookLis
 
     override fun play() {
 
+        if (!::playerBinder.isInitialized) {
+            return;
+        }
+
         val book = bookViewModel.getSelectedBook().value
         val filename = book?.name + ".mp3"
 
@@ -219,14 +244,35 @@ class MainActivity : AppCompatActivity(), BookListFragment.DoubleLayout, BookLis
     }
 
     override fun pause() {
+
+        if (!::playerBinder.isInitialized) {
+            return;
+        }
+
         playerBinder.pause()
     }
 
     override fun stop() {
+
+        if (!::playerBinder.isInitialized) {
+            return;
+        }
+
         playerBinder.stop()
+        bookViewModel.setBookProgress(0)
+/*
+        val sp = getSharedPreferences(bookViewModel.getSelectedBook().value?.name, MODE_PRIVATE)
+        val edit = sp.edit()
+        edit.putInt("Progress", 0)
+        edit.apply()*/
     }
 
     override fun seek(progress: Int) {
+
+        if (!::playerBinder.isInitialized) {
+            return;
+        }
+
         playerBinder.seekTo(progress)
     }
 
