@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.ComponentName
 import android.content.Intent
 import android.content.ServiceConnection
+import android.content.SharedPreferences
 import android.os.*
 import androidx.appcompat.app.AppCompatActivity
 import android.util.Log
@@ -36,6 +37,14 @@ class MainActivity : AppCompatActivity(), BookListFragment.DoubleLayout, BookLis
         try {
             bookViewModel.setBookProgress((it.obj as PlayerService.BookProgress).progress)
             Log.i("Got message: ", "${(it.obj as PlayerService.BookProgress).progress}")
+
+            bookViewModel.getBookProgress().value?.let { it1 ->
+                val sp = getSharedPreferences(bookViewModel.getSelectedBook().value?.name, MODE_PRIVATE)
+                val edit = sp.edit()
+                edit.putInt("Progress", it1)
+                edit.apply()
+            }
+
         } catch (npe: NullPointerException) {Log.i("Got message: ", "not playing")}
         true
     }
@@ -175,7 +184,7 @@ class MainActivity : AppCompatActivity(), BookListFragment.DoubleLayout, BookLis
 
 
         val url = URL("https://kamorris.com/lab/audlib/download.php?id="+book?.id)
-        println(book?.coverURL)
+        println("https://kamorris.com/lab/audlib/download.php?id="+book?.id)
 
         if (!getFilesDir().list().contains(filename)) {
 
@@ -202,7 +211,9 @@ class MainActivity : AppCompatActivity(), BookListFragment.DoubleLayout, BookLis
             Log.i("Book:", "Reading from file")
             bookViewModel.getSelectedBook().value?.let {
                 val bookFile = File(filesDir.path + "/" + filename)
-                playerBinder.play(bookFile, 1)
+                playerBinder.play(bookFile,
+                    getSharedPreferences(bookViewModel.getSelectedBook().value?.name, MODE_PRIVATE)
+                        .getInt("Progress", 0))
             }
         }
     }

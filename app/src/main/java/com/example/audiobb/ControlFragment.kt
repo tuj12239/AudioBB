@@ -1,5 +1,6 @@
 package com.example.audiobb
 
+import android.content.Context.MODE_PRIVATE
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -165,6 +166,12 @@ class ControlFragment : Fragment() {
                 putInt("bookID", bookID)
             }
         }
+
+        val progress = requireActivity().getSharedPreferences(book.value?.name, MODE_PRIVATE)
+            .getInt("Progress", 0)
+
+        seekBar.progress = progress
+
     }
 
     private fun updateSeekBar() {
