@@ -11,6 +11,7 @@ import android.widget.SeekBar
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import java.io.ObjectOutputStream
 
 class ControlFragment : Fragment() {
 
@@ -156,10 +157,6 @@ class ControlFragment : Fragment() {
             playButton.text = "Play"
             stopped = true
 
-            ViewModelProvider(requireActivity())
-                .get(BookViewModel::class.java)
-                .setBookProgress(0)
-
             arguments?.apply {
                 putBoolean("playing", playing)
                 putBoolean("stopped", stopped)
@@ -169,6 +166,12 @@ class ControlFragment : Fragment() {
 
         val progress = requireActivity().getSharedPreferences(book.value?.name, MODE_PRIVATE)
             .getInt("Progress", 0)
+
+        val fo = requireActivity().openFileOutput("CurrentBook.txt", MODE_PRIVATE)
+        val oo = ObjectOutputStream(fo)
+        oo.writeObject(book.value)
+        fo.close()
+        oo.close()
 
         seekBar.progress = progress
 

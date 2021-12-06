@@ -96,11 +96,14 @@ class MainActivity : AppCompatActivity(), BookListFragment.DoubleLayout, BookLis
                         loadFragments()
                         firstLoad = false
                     } else {
-                        if (supportFragmentManager.fragments[0] !is BookListFragment) {
+                        if (supportFragmentManager.fragments[0] is BookListFragment) {
+                            (supportFragmentManager.fragments[0] as BookListFragment)
+                                .updateList(bookList)
+                        } else if (supportFragmentManager.fragments[1] is BookListFragment){
                             (supportFragmentManager.fragments[1] as BookListFragment)
                                 .updateList(bookList)
                         } else {
-                            (supportFragmentManager.fragments[0] as BookListFragment)
+                            (supportFragmentManager.fragments[2] as BookListFragment)
                                 .updateList(bookList)
                         }
                     }
@@ -129,7 +132,18 @@ class MainActivity : AppCompatActivity(), BookListFragment.DoubleLayout, BookLis
                 for (i in 0..list.size()-1) {
                     bookList.add(list.get(i))
                 }
+                fi.close()
+                oi.close()
                 loadFragments()
+            }
+
+            if (getFilesDir().list().contains("CurrentBook.txt")) {
+                val fi = openFileInput("CurrentBook.txt")
+                val oi = ObjectInputStream(fi)
+                val book = oi.readObject() as Book
+                bookViewModel.setSelectedBook(book)
+                bookViewModel.setBookProgress(getSharedPreferences(book.name, MODE_PRIVATE)
+                    .getInt("Progress", 0))
             }
         } else {
 
