@@ -38,7 +38,7 @@ class ControlFragment : Fragment() {
     interface Controller {
         fun play()
         fun pause()
-        fun stop()
+        fun stop(button: Boolean)
         fun seek(progress: Int)
     }
 
@@ -112,7 +112,7 @@ class ControlFragment : Fragment() {
         }
 
         stopButton.setOnClickListener {
-            (requireActivity() as Controller).stop()
+            (requireActivity() as Controller).stop(true)
             stopped = true
             playing = false
             playButton.text = "Play"
@@ -150,7 +150,7 @@ class ControlFragment : Fragment() {
         if (book.value?.id != bookID) {
             bookID = book.value?.id!!
 
-            (requireActivity() as Controller).stop()
+            (requireActivity() as Controller).stop(false)
             (requireActivity() as Controller).seek(0)
             playing = false
             playButton.text = "Play"

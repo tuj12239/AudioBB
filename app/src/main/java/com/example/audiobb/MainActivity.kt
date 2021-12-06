@@ -252,7 +252,7 @@ class MainActivity : AppCompatActivity(), BookListFragment.DoubleLayout, BookLis
         playerBinder.pause()
     }
 
-    override fun stop() {
+    override fun stop(button: Boolean) {
 
         if (!::playerBinder.isInitialized) {
             return;
@@ -260,11 +260,14 @@ class MainActivity : AppCompatActivity(), BookListFragment.DoubleLayout, BookLis
 
         playerBinder.stop()
         bookViewModel.setBookProgress(0)
-/*
-        val sp = getSharedPreferences(bookViewModel.getSelectedBook().value?.name, MODE_PRIVATE)
-        val edit = sp.edit()
-        edit.putInt("Progress", 0)
-        edit.apply()*/
+
+        //Only reset if button was explicitly pressed
+        if (button) {
+            val sp = getSharedPreferences(bookViewModel.getSelectedBook().value?.name, MODE_PRIVATE)
+            val edit = sp.edit()
+            edit.putInt("Progress", 0)
+            edit.apply()
+        }
     }
 
     override fun seek(progress: Int) {
