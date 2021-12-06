@@ -12,7 +12,11 @@ import androidx.activity.result.contract.ActivityResultContracts.StartActivityFo
 import androidx.fragment.app.FragmentContainerView
 import androidx.lifecycle.ViewModelProvider
 import edu.temple.audlibplayer.PlayerService
+import java.io.BufferedInputStream
+import java.io.File
 import java.lang.NullPointerException
+import java.net.URL
+import kotlin.concurrent.thread
 
 class MainActivity : AppCompatActivity(), BookListFragment.DoubleLayout, BookListFragment.Search,
                                             ControlFragment.Controller{
@@ -165,7 +169,42 @@ class MainActivity : AppCompatActivity(), BookListFragment.DoubleLayout, BookLis
     }
 
     override fun play() {
-        bookViewModel.getSelectedBook().value?.let { playerBinder.play(it.id) }
+
+        val book = bookViewModel.getSelectedBook().value
+        val filename = book?.name + ".mp3"
+
+
+        val url = URL("https://kamorris.com/lab/audlib/download.php?id="+book?.id)
+        println(book?.coverURL)
+
+        if (!getFilesDir().list().contains(filename)) {
+
+            Log.i("Book:", "Reading from stream")
+            bookViewModel.getSelectedBook().value?.let { playerBinder.play(it.id) }
+
+            thread(start = true) {
+                val inStream = BufferedInputStream(url.openStream())
+                val outStream = openFileOutput(filename, MODE_PRIVATE)
+                val buffer = ByteArray(1024)
+                var bytesDownloaded = 0
+
+                while (inStream.read(buffer) != -1) {
+                    outStream.write(buffer)
+                    bytesDownloaded += buffer.size
+                    Log.i("Bytes:", "$bytesDownloaded")
+                }
+
+                inStream.close()
+                outStream.close()
+                Log.i("File:", "downloaded $filename")
+            }
+        } else {
+            Log.i("Book:", "Reading from file")
+            bookViewModel.getSelectedBook().value?.let {
+                val bookFile = File(filesDir.path + "/" + filename)
+                playerBinder.play(bookFile, 1)
+            }
+        }
     }
 
     override fun pause() {
