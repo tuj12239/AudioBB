@@ -5,11 +5,12 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
-class BookListFragment() : Fragment() {
+class BookListFragment : Fragment() {
 
     lateinit var bookList: BookList
     lateinit var layout: View
@@ -21,6 +22,7 @@ class BookListFragment() : Fragment() {
 
             val frag = BookListFragment().apply {
                 bookList = _bookList
+
                 arguments = Bundle().apply {
                     putSerializable("bookList", bookList)
                 }
@@ -31,6 +33,10 @@ class BookListFragment() : Fragment() {
 
     interface DoubleLayout {
         fun selectionMade()
+    }
+
+    interface Search {
+        fun makeSearch()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -59,6 +65,9 @@ class BookListFragment() : Fragment() {
             updateModel(bookListView.getChildAdapterPosition(it))
         }
         bookListView.adapter = adapter
+
+        val searchButton = layout.findViewById<Button>(R.id.searchDialogButton)
+        searchButton.setOnClickListener { (requireActivity() as Search).makeSearch() }
     }
 
     private fun updateModel(index: Int) {
@@ -66,6 +75,18 @@ class BookListFragment() : Fragment() {
             .get(BookViewModel::class.java)
             .setSelectedBook(bookList.get(index))
         (requireActivity() as DoubleLayout).selectionMade()
+    }
+
+    fun updateList(bookList: BookList) {
+        this.bookList = bookList
+        val adapter = BookAdapter(requireContext(), bookList) {
+            updateModel(bookListView.getChildAdapterPosition(it))
+        }
+        bookListView.adapter = adapter
+
+        arguments?.apply {
+            putSerializable("bookList", bookList)
+        }
     }
 
 }
